@@ -11,6 +11,7 @@ werkzeug = "*"
 pyexiftool = "*"
 pillow = "*"
 numpy = "*"
+cython = "*"
 
 [dev-packages]
 
