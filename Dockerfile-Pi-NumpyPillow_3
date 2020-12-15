@@ -1,0 +1,11 @@
+FROM interim2
+
+ENV PROJECT_DIR /usr/src/app
+
+WORKDIR ${PROJECT_DIR}
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python3", "run.py"]
