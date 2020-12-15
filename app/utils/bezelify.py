@@ -1,5 +1,4 @@
 import numpy as np
-import exiftool
 from PIL import Image, UnidentifiedImageError
 
 import os
@@ -10,9 +9,6 @@ import zipfile
 
 import zipfile
 
-exiftool_location = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'exiftool',
-                                 'exiftool')
-print("Exiftool location: " + exiftool_location)
 bezels_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../static/bezels/devices")
 bezel_metadata_fp = os.path.join(bezels_folder, "device_bezels.json")
 
