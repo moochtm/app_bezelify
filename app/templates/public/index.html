@@ -4,29 +4,97 @@
 
 {% block main %}
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-
-            <h1>Upload a file</h1>
-            <hr>
-
-            <form action="/" method="POST" enctype="multipart/form-data">
-
-                <div class="form-group">
-                    <label>Select file</label>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="file" id="file">
-                        <label class="custom-file-label" for="file">Select file...</label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Upload</button>
-
-            </form>
-
+<main class="container">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h4 class="border-bottom pb-2 mb-0">Files</h4>
+        <div class="d-flex text-muted pt-3">
+            <input id="multiFiles" type="file" name="files[]" id="file" multiple="multiple" class="form-control">
+        </div>
+        <div class="d-flex pt-3">
+            <div class="pe-2"><button id="upload" class="btn btn-primary">Upload</button></div>
+            <div class="pe-2"><button id="delete-files" class="btn btn-primary">Delete Selected</button></div>
+            <div class="pe-2"><button id="refresh-files" class="btn btn-primary">Refresh</button></div>
+        </div>
+        <div class="d-flex pt-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <!--<input id="masterCheck" class="form-check-input" type="checkbox" value="">
+                            -->
+                        </th>
+                        <th scope="col">Filename</th>
+                    </tr>
+                </thead>
+                <tbody id="files_table">
+                <!--<tr>
+                    <th scope="row"><input class="form-check-input" type="checkbox" value=""></th>
+                    <td>Mark</td>
+                </tr>
+                <tr>
+                    <th scope="row"><input class="form-check-input" type="checkbox" value=""></th>
+                    <td>Jacob</td>
+                </tr>
+                <tr>
+                    <th scope="row"><input class="form-check-input" type="checkbox" value=""></th>
+                    <td colspan="2">Larry the Bird</td>
+                </tr>-->
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h4 class="border-bottom pb-2 mb-0">Device Images</h4>
+        <div class="d-flex text-muted pt-3">
+            <select id="select_bezel" class="form-select"></select>
+        </div>
+        <div class="d-flex pt-3">
+            <!--<div class="pe-2"><button id="download selected" class="btn btn-primary">Download Selected</button></div>-->
+            <div class="pe-2"><button id="download-all" class="btn btn-primary">Download All</button></div>
+            <div class="pe-2"><button id="refresh-device-images" class="btn btn-primary">Refresh</button></div>
+            <div class="pe-2">
+                <input type="radio" name="radios" class="form-check-input" id="radio_none">
+                <label class="form-check-label" for="radio_crop">None</label>
+            </div>
+            <div class="pe-2">
+                <input type="radio" name="radios" class="form-check-input" id="radio_stretch">
+                <label class="form-check-label" for="radio_stretch">Stretch</label>
+            </div>
+            <div class="pe-2">
+                <input type="radio" name="radios" class="form-check-input" id="radio_crop">
+                <label class="form-check-label" for="radio_crop">Stretch & Crop</label>
+            </div>
+        </div>
+        <div class="d-flex pt-3">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <!--<input id="masterCheck" class="form-check-input" type="checkbox" value="">
+                        -->
+                    </th>
+                    <th scope="col">Device Image</th>
+                </tr>
+                </thead>
+                <tbody id="devices_table">
+                <!--
+                <tr>
+                    <th scope="row"><input class="form-check-input" type="checkbox" value=""></th>
+                    <td>Mark</td>
+                </tr>
+                <tr>
+                    <th scope="row"><input class="form-check-input" type="checkbox" value=""></th>
+                    <td>Jacob</td>
+                </tr>
+                <tr>
+                    <th scope="row"><input class="form-check-input" type="checkbox" value=""></th>
+                    <td colspan="2">Larry the Bird</td>
+                </tr>
+                -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 
 {% endblock %}
