@@ -13,6 +13,9 @@ import zipfile
 import json
 
 app.config['UPLOAD_FOLDER'] = os.path.dirname(os.path.abspath(__file__)) + '/temp/'
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.mkdir(app.config['UPLOAD_FOLDER'])
+
 ALLOWED_IMAGE_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS
 session_timeout_mins = 60
