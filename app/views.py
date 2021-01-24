@@ -20,6 +20,8 @@ ALLOWED_IMAGE_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS
 session_timeout_mins = 60
 
+bezelify.get_bezels_metadata(force_refresh=True)
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

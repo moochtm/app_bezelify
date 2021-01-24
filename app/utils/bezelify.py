@@ -7,7 +7,7 @@ import uuid
 import json
 
 
-def get_bezels_metadata():
+def get_bezels_metadata(force_refresh=False):
     """
     Opens JSON of bezel metadata, if it exists, and returns dict of bezel metadata.
     Scans bezels folder and creates JSON if it doesn't exist.
@@ -15,6 +15,13 @@ def get_bezels_metadata():
     """
     bezels_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../static/bezels/devices")
     bezel_metadata_fp = os.path.join(bezels_folder, "device_bezels.json")
+
+    if force_refresh:
+        print("forced bezel metadata refresh")
+        try:
+            os.remove(bezel_metadata_fp)
+        except:
+            print("error attempting to delete JSON")
 
     bezels_metadata = None
     try:
