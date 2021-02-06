@@ -78,6 +78,7 @@ def get_bezel_metadata(filepath):
         }
     }
     """
+    print(filepath)
     bim = None
     try:
         bim = Image.open(filepath)
@@ -121,16 +122,28 @@ def get_bezel_metadata(filepath):
     max_y = half_height
     while im_data[max_y + 1][half_width][3] != 255:
         max_y = max_y + 1
+    # All done, except that some phones have notches in the top of their screens
+    # to make space for the cameras. To find the true min_y start from half_width
+    # and min_y, then x++. IF pixel above alpha != 255 THEN min_y-- and continue.
+    # ELSE IF pixel to right alpha is not 100% transparent THEN stop.
+    temp_x = half_width
+    while im_data[min_y][temp_x + 1][3] < 255:
+        if im_data[min_y - 1][temp_x][3] != 0:
+            temp_x = temp_x + 1
+        else:
+            min_y = min_y - 1
+
     bezel_metadata["screen_top_left"] = (min_x, min_y)
     bezel_metadata["screen_width"] = max_x - min_x + 1
     bezel_metadata["screen_height"] = max_y - min_y + 1
     bezel_metadata["portrait"] = bezel_metadata["screen_height"] > \
-                                     bezel_metadata["screen_width"]
+                                 bezel_metadata["screen_width"]
+    print(bezel_metadata)
+
     return bezel_metadata
 
 
 def add_bezel(fp, bezel_id, stretch=False, crop=False, preview=False):
-
     im_src = Image.open(fp)
     # rotate if landscape
     landscape = im_src.size[0] > im_src.size[1]
