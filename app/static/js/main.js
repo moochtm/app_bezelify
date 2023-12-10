@@ -72,7 +72,8 @@ $(document).ready(function (e) {
                             params += '&preview=true'
                             console.log(params)
                             var img = $('<img>').attr('src', 'image/' + key + params)
-                            //img.attr('style', "max-width: 400px");
+                            img.attr('style', "max-width: 250px; max-height: 250px")
+                            // img.attr('style', "max-height: 400px");
                             img.attr('id', key + '_bezelImage')
                             var td = $('<td>').append(img);
                             row.append(td);

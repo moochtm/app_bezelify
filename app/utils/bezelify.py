@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image, ImageOps, UnidentifiedImageError
+import traceback
 
 import io
 import os
@@ -48,6 +49,9 @@ def get_bezels_metadata(force_refresh=False):
                 bim = Image.open(fp)
             except UnidentifiedImageError:
                 print("UnidentifiedImageError: " + fp)
+            except Exception as e:
+                print(traceback.format_exc())
+                print("Exception: " + fp)
 
             if bim is not None:
                 bezel_metadata = get_bezel_metadata(fp)
@@ -91,6 +95,23 @@ def get_bezel_metadata(filepath):
     _, filename = os.path.split(filepath)
     bezel_metadata["name"], _ = os.path.splitext(filename)
 
+    screen_metadata = find_screen_from_center(bim)
+    if screen_metadata is None:
+        screen_metadata = {"screen_top_left": (0, 0), "screen_width": 10, "screen_height": 10}
+        screen_metadata["portrait"] = screen_metadata["screen_height"] > \
+                                      screen_metadata["screen_width"]
+    bezel_metadata = {**bezel_metadata, **screen_metadata}
+
+    return bezel_metadata
+
+
+def find_screen_from_center(bim):
+    """
+    Attempts to find the screen by starting in the center of the image
+    :param bim:
+    :return: bezel_metadata
+    """
+
     im_data = np.asarray(bim)
     # To find the four corners of the screen area, to start with
     # let's assume it's a rectangle, and that the middle pixel
@@ -133,23 +154,77 @@ def get_bezel_metadata(filepath):
         else:
             min_y = min_y - 1
 
-    bezel_metadata["screen_top_left"] = (min_x, min_y)
-    bezel_metadata["screen_width"] = max_x - min_x + 1
-    bezel_metadata["screen_height"] = max_y - min_y + 1
-    bezel_metadata["portrait"] = bezel_metadata["screen_height"] > \
-                                 bezel_metadata["screen_width"]
-    print(bezel_metadata)
+    screen_metadata = {}
+    screen_metadata["screen_top_left"] = (min_x, min_y)
+    screen_metadata["screen_width"] = max_x - min_x + 1
+    screen_metadata["screen_height"] = max_y - min_y + 1
+    screen_metadata["portrait"] = screen_metadata["screen_height"] > \
+                                  screen_metadata["screen_width"]
+    print(screen_metadata)
 
-    return bezel_metadata
+    return screen_metadata
+
+
+def find_screen_from_sides(bim):
+    """
+    Attempts to find the screen by starting in the center of the image
+    :param bim:
+    :return: bezel_metadata
+    """
+    im_data = np.asarray(bim)
+    # To find the four corners of the screen area, to start with
+    # let's assume it's a rectangle, and that the middle pixel
+    # in the image is going to be screen. That means...
+    half_width = round(bim.size[0] / 2)
+    half_height = round(bim.size[1] / 2)
+    # ...the pixel array[half_height, half_width] should have alpha=0
+    # and if it DOESN'T we've messed up and the process needs to fail.
+    if im_data[half_height, half_width][3] != 0:
+        print("Alpha of middle pixel isn't 0. Moving on...")
+        return None
+
+    # Now, starting from each of the left, top, right and bottom sides,
+    # we'll step in one pix at a time and check the alpha value of the pixel.
+    # If the alpha value is = 255, we assume the pixel is part of the bezel
+    # If the alpha value is < 255, and we have already reached the bezel
+    # we assume that we have reached the screen
+    min_x = 0
+    while im_data[half_height][min_x][3] != 255:
+        min_x = min_x + 1
+    while im_data[half_height][min_x][3] == 255:
+        min_x = min_x + 1
+
+    max_x = bim.size[0] - 1
+    while im_data[half_height][max_x][3] != 255:
+        max_x = max_x - 1
+    while im_data[half_height][max_x][3] == 255:
+        max_x = max_x - 1
+
+    min_y = 0
+    while im_data[min_y][half_width][3] != 255:
+        min_y = min_y + 1
+    while im_data[min_y][half_width][3] == 255:
+        min_y = min_y + 1
+
+    max_y = bim.size[1] - 1
+    while im_data[max_y][half_width][3] != 255:
+        max_y = max_y - 1
+    while im_data[max_y][half_width][3] == 255:
+        max_y = max_y - 1
+
+    screen_metadata = {}
+    screen_metadata["screen_top_left"] = (min_x, min_y)
+    screen_metadata["screen_width"] = max_x - min_x + 1
+    screen_metadata["screen_height"] = max_y - min_y + 1
+    screen_metadata["portrait"] = screen_metadata["screen_height"] > \
+                                  screen_metadata["screen_width"]
+    print(screen_metadata)
+
+    return screen_metadata
 
 
 def add_bezel(fp, bezel_id, stretch=False, crop=False, preview=False):
     im_src = Image.open(fp)
-    # rotate if landscape
-    landscape = im_src.size[0] > im_src.size[1]
-    if landscape:
-        # rotate source image to portrait and then back again at the end
-        im_src = im_src.rotate(270, expand=True)
 
     if bezel_id.lower() == "auto":
         matching_bezels = find_matching_device_bezels(im_src.size)
@@ -163,6 +238,12 @@ def add_bezel(fp, bezel_id, stretch=False, crop=False, preview=False):
             print("bezel has no matching metadata")
             return None
         b = bezel_metadata[bezel_id]
+
+    # rotate if image is landscape and screen is portrait
+    im_landscape = im_src.size[0] > im_src.size[1]
+    if b["portrait"] and im_landscape:
+        # rotate source image to portrait and then back again at the end
+        im_src = im_src.rotate(270, expand=True)
 
     if stretch:
         print(b)
@@ -191,7 +272,8 @@ def add_bezel(fp, bezel_id, stretch=False, crop=False, preview=False):
         w, h = im_tgt.size
         im_tgt = im_tgt.reduce(3)
 
-    if landscape:
+    if b["portrait"] and im_landscape:
+        # rotate target image to landscape
         im_tgt = im_tgt.rotate(90, expand=True)
 
     tgt_folder, _ = os.path.split(fp)
