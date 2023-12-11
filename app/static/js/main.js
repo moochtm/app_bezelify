@@ -65,7 +65,7 @@ $(document).ready(function (e) {
                         $.each(response, function (key, data) {
                             var row = $('<tr>');
                             row.attr('id', key)
-                            row.html('<th scope="row"><input name="row-check" class="form-check-input" type="checkbox" value=""></th>')
+                            // row.html('<th scope="row"><input name="row-check" class="form-check-input" type="checkbox" value=""></th>')
                             var params = '?bezel=' + encodeURIComponent(selected_Bezel)
                             params += '&stretch=' + $("#radio_stretch").prop("checked")
                             params += '&crop=' + $("#radio_crop").prop("checked")
@@ -73,7 +73,6 @@ $(document).ready(function (e) {
                             console.log(params)
                             var img = $('<img>').attr('src', 'image/' + key + params)
                             img.attr('style', "max-width: 250px; max-height: 250px")
-                            // img.attr('style', "max-height: 400px");
                             img.attr('id', key + '_bezelImage')
                             var td = $('<td>').append(img);
                             row.append(td);
@@ -201,7 +200,7 @@ $(document).ready(function (e) {
                 console.log("bezels:")
                 console.log(bezels)
                 var sel = $('#select_bezel')
-                sel.append($('<option>').attr('value', 'Auto').text('Auto'))
+                // sel.append($('<option>').attr('value', 'Auto').text('Auto'))
                 $.each(bezels, function (k, v) {
                     var opt = $('<option>').attr('value', k).text(k)
                     sel.append(opt)

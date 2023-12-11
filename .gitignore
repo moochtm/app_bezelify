@@ -3,7 +3,6 @@
 ### Example user template
 
 venv
-app\temp
 
 # IntelliJ project files
 .idea
@@ -18,3 +17,4 @@ gen
 *.iml
 out
 gen
+/app/temp/

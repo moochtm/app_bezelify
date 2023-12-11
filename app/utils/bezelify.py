@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image, ImageOps, UnidentifiedImageError
 import traceback
+import sys
 
 import io
 import os
@@ -8,13 +9,22 @@ import uuid
 import json
 
 
+if getattr(sys, 'frozen', False):
+    print(os.listdir(sys._MEIPASS))
+    bezels_folder = os.path.join(sys._MEIPASS, 'app/utils/bezels')
+    print(f"bezels folder: {bezels_folder}")
+else:
+    bezels_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "bezels")
+    print(f"bezels folder: {bezels_folder}")
+
 def get_bezels_metadata(force_refresh=False):
     """
     Opens JSON of bezel metadata, if it exists, and returns dict of bezel metadata.
     Scans bezels folder and creates JSON if it doesn't exist.
     :return: dict of bezel metadata.
     """
-    bezels_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../static/bezels/devices")
+    # bezels_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "bezels/devices")
+    # bezels_folder = "."
     bezel_metadata_fp = os.path.join(bezels_folder, "device_bezels.json")
 
     if force_refresh:

@@ -1,0 +1,1 @@
+pyinstaller -F --add-data "app/templates:app/templates" --add-data "app/static:app/static" --add-data "app/utils/bezels:app/utils/bezels" bezelify.py
